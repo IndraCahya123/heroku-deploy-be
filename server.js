@@ -17,6 +17,9 @@ app.use(cors());
 
 //routes group
 app.use("/api/v1", router);
+app.get("/", (req, res) => {
+    res.send("testing")
+});
 app.use("/uploadedImages", express.static("uploadedImages"));
 
 app.listen(portServer, () => console.log(`your server is running at port : ${portServer}`));
