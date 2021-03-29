@@ -8,7 +8,7 @@ const cors = require("cors");
 
 const router = require("./src/routes");
 
-const portServer = 8000;
+const portServer = process.env.PORT || 8000;
 
 //body parser
 app.use(express.json());
