@@ -4,9 +4,7 @@
   "description": "foodwaysBackEnd",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    // "client": "npm start --prefix ../Front-End",
-    // "dev": "concurrently \"npm start\" \"npm run client\""
+    "start": "node server.js"
   },
   "author": "Indra Cahya Bali",
   "license": "ISC",
