@@ -9,6 +9,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       transactionId: {
+        allowNull: false,
         type: Sequelize.INTEGER,
         references: {
           model: "Transactions",
@@ -21,7 +22,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: "Transactions",
+          model: "Users",
           key: "id"
         },
         onUpdate: "CASCADE",

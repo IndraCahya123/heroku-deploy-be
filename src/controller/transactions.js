@@ -13,25 +13,26 @@ exports.addTransaction = async (req, res) => {
 
         //check if user order from the same partner
         let _products = [];
-
-        for (let i = 0; i < body.length; i++) {
+        
+        for (let i = 0; i < body.orders.length; i++) {
             const orderedProducts = await Product.findOne({
                 where: {
-                    id: body[i].id,
+                    id: body.orders[i].id,
                 }
             });
-
+            console.log(orderedProducts);
             if (!orderedProducts) {
                 res.status(404).send({
                     status: "Error",
-                    message: `Product with id : ${body[i].id} doesn't exist`
+                    message: `Product with id : ${body.orders[i].id} doesn't exist`
                 })
             }
 
             _products.push(orderedProducts);
         }
 
-        const partner = _products[0].userId
+
+        const partner = _products[0].UserId
 
         const checkPartner = _products.every(product => product.userId == partner);
 
@@ -46,7 +47,11 @@ exports.addTransaction = async (req, res) => {
         const transaction = await Transaction.create({
             userId: req.userId.id,
             partnerId: _products[0].UserId,
-            status: "waiting Approval"
+            status: "waiting Approval",
+            customerLoc: body.customerLoc,
+            restaurantLoc: body.restaurantLoc,
+            total: body.total,
+            currentDate: body.currentDate
         });
     
         //find user order
@@ -60,7 +65,7 @@ exports.addTransaction = async (req, res) => {
         });
         
         //automatically add userId and transaction id to order table
-        const newInput = body.map(product => {
+        const newInput = body.orders.map(product => {
             return {
                 transactionId: transaction.id,
                 userId: req.userId.id,
@@ -75,10 +80,10 @@ exports.addTransaction = async (req, res) => {
         // get ordered products
         const orders = [];
     
-        for (let i = 0; i < body.length; i++) {
+        for (let i = 0; i < body.orders.length; i++) {
             const getProduct = await Product.findOne({
                 where: {
-                    id: body[i].id
+                    id: body.orders[i].id
                 },
                 attributes: {
                     exclude: ["userId", "UserId", "image", "createdAt", "updatedAt"],
@@ -87,7 +92,7 @@ exports.addTransaction = async (req, res) => {
     
             const productWithQty = {
                 ...getProduct.dataValues,
-                qty: body[i].qty
+                qty: body.orders[i].qty
             }
     
             orders.push(productWithQty);
@@ -107,7 +112,10 @@ exports.addTransaction = async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        res.status(500).send(...errorResponse);
+        res.status(500).send({
+            status: "Error",
+            message: "Server Error"
+        });
     }
 }
 
@@ -177,6 +185,22 @@ exports.getTransactionsByPartnerId = async (req, res) => {
             });
     
         //get orders by partner
+        const usersOrder = [];
+        
+            for (let a = 0; a < getTransactions.length; a++) {
+                const getUsers = await User.findOne({
+                    where: {
+                        id: getTransactions[a].userId
+                    },
+                    attributes: {
+                        exclude: ["image","password", "email", "phone", "role", "createdAt", "updatedAt"],
+                    },
+                });
+        
+                usersOrder.push(getUsers);
+        }
+        
+        //get orders by partner
         const ordersByPartner = [];
         
             for (let i = 0; i < getTransactions.length; i++) {
@@ -217,8 +241,9 @@ exports.getTransactionsByPartnerId = async (req, res) => {
     
         for (let i = 0; i < getTransactions.length; i++) {
             const newTransaction = {
-                    ...getTransactions[i].dataValues,
-                    order: allProduct[i]
+                ...getTransactions[i].dataValues,
+                customer: usersOrder[i],
+                orders: allProduct[i]
             }
             
             transactions.push(newTransaction);
@@ -271,6 +296,17 @@ exports.getDetailTransaction = async (req, res) => {
             attributes: {
                 exclude: ["password", "image", "role", "createdAt", "updatedAt"]
             }
+        });
+
+        //get Partner 
+
+        const partner = await User.findOne({
+            where: {
+                id: transactionSelected.partnerId
+            },
+            attributes: {
+                exclude: ["password", "role", "createdAt", "updatedAt"]
+            }
         })
         
         //get the orders
@@ -304,8 +340,14 @@ exports.getDetailTransaction = async (req, res) => {
         const transaction = {
             id: transactionSelected.id,
             userOrder,
+            restaurant: {
+                ...partner.dataValues,
+                image: process.env.IMG_URL + partner.image
+            },
             status: transactionSelected.status,
             order: products,
+            customerLoc: transactionSelected.customerLoc,
+            restaurantLoc: transactionSelected.restaurantLoc
         }
         res.send({
             status: "success",
@@ -339,25 +381,6 @@ exports.editTransaction = async (req, res) => {
                 status: "Error",
                 message: "Transactions not found"
             });
-        
-        //check user who edited has authorization
-        if (transactionSelected && transactionSelected.partnerId !== req.userId.id)
-        return res.send({
-            status: "Error",
-            message: "You haven't authorization to edit this transaction."
-        });
-
-        const schemaTransactionInput = Joi.object({
-            status: Joi.string().required(),
-        });
-
-        const { error } = schemaTransactionInput.validate(body);
-
-        if (error)
-        return res.status(400).send({
-            status: "There's error in your data input",
-            message: error.details[0].message,
-        });
 
         const changeStatus = {
             status: body.status
@@ -438,9 +461,30 @@ exports.getMyTransactions = async (req, res) => {
                 userId,
             },
             attributes: {
-                exclude: ["partnerId", "userId", "UserId", "createdAt", "updatedAt"]
-            }
+                exclude: ["userId", "UserId", "createdAt", "updatedAt"]
+            },
+            order: [
+                ['updatedAt', 'DESC']
+            ]
         });
+
+        //find partner 
+        let restaurants = [];
+        for (let a = 0; a < getTransactions.length; a++) {
+            const restaurant = await User.findOne({
+                where: {
+                    id: getTransactions[a].partnerId
+                },
+                attributes: {
+                    exclude: ["id", "role", "phone", "email", "password", "createdAt", "updatedAt"]
+                }
+            });
+            const restaurantImg = {
+                ...restaurant.dataValues,
+                image: process.env.IMG_URL + restaurant.image
+            }
+            restaurants.push(restaurantImg);
+        }
 
         if (!getTransactions)
             return res.status(404).send({
@@ -462,7 +506,7 @@ exports.getMyTransactions = async (req, res) => {
             }
         
         // get all ordered product
-        const allProduct = [];
+        let allProduct = [];
     
         for (let i = 0; i < ordersByUser.length; i++) {
             allProduct[i] = []
@@ -490,6 +534,7 @@ exports.getMyTransactions = async (req, res) => {
         for (let i = 0; i < getTransactions.length; i++) {
             const newTransaction = {
                     ...getTransactions[i].dataValues,
+                    restaurant: restaurants[i],
                     order: allProduct[i]
             }
             

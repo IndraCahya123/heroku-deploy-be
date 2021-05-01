@@ -60,6 +60,6 @@ router.delete("/transaction/:id", authentication, deleteTransaction);
 router.get("/transactions/:partnerId", authentication, partnerAuth, getTransactionsByPartnerId);
 router.get("/transaction/:id", authentication, getDetailTransaction);
 router.patch("/transaction/:id", authentication, editTransaction);
-router.get("/my-transactions", authentication, getMyTransactions);
+router.get("/my-transactions", authentication, userAuth, getMyTransactions);
 
 module.exports = router;

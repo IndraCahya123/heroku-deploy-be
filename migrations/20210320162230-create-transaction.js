@@ -25,6 +25,20 @@ module.exports = {
       status: {
         type: Sequelize.STRING
       },
+      customerLoc: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      restaurantLoc: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      total: {
+        type: Sequelize.INTEGER,
+      },
+      currentDate: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

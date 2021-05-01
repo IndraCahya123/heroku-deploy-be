@@ -198,7 +198,7 @@ exports.getAllUsersPartner = async (req, res) => {
                     userId: users[i].id
                 },
                 attributes: {
-                    exclude: ["UserId", "created_at", "updated_at"]
+                    exclude: ["UserId", "created_at", "updated_at", "createdAt", "updatedAt"]
                 }
             });
 

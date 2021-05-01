@@ -61,7 +61,7 @@ exports.getAllProductsByPartnerId = async (req, res) => {
                 model: User,
                 as: "user",
                 attributes: {
-                    exclude: ["password", "email", "phone", "role", "createdAt", "updatedAt"],
+                    exclude: ["password", "role", "createdAt", "updatedAt"],
                 },
             },
             attributes: {
@@ -225,19 +225,20 @@ exports.editProduct = async (req, res) => {
                 message: "Product doesn't exist",
             });
         
-        //validate user input
-        const schemaProductInput = Joi.object({
-            title: Joi.string().min(4).max(100),
-            price: Joi.number().min(1000)
-        });
+        // //validate user input
+        // const schemaProductInput = Joi.object({
+        //     title: Joi.string().min(4).max(100),
+        //     price: Joi.number().min(1000),
+        //     image: Joi.allow()
+        // });
 
-        const { error } = schemaProductInput.validate(req.body);
+        // const { error } = schemaProductInput.validate(req.body);
 
-        if (error)
-        return res.status(400).send({
-            status: "There's error in your data input",
-            message: error.details[0].message,
-        });
+        // if (error)
+        // return res.status(400).send({
+        //     status: "There's error in your data input",
+        //     message: error.details[0].message,
+        // });
 
         let newImage;
 
