@@ -43,7 +43,7 @@ router.get("/products", getAllProducts);
 router.get("/products/:userId", authentication, getAllProductsByPartnerId);
 router.get("/product/:id", getDetailProduct);
 router.post("/product", authentication, partnerAuth, uploadImageFile("image", false), addNewProduct);
-router.patch("/product/:productId", authentication, partnerAuth, uploadImageFile("image", true), editProduct);
+router.patch("/product/:productId", authentication, uploadImageFile("image", true), editProduct);
 router.delete("/product/:productId", authentication, partnerAuth, deleteProduct);
 
 //transactions
