@@ -186,10 +186,10 @@ exports.addNewProduct = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
-        res.status(500).send(res.status(500).send({
+        res.status(500).send({
             status: "error",
             message: "Server Error",
-            }));
+            });
     }
 }
 
