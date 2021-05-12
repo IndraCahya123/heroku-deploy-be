@@ -12,19 +12,16 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Order.belongsTo(models.Transaction, {
         foreignKey: "transactionId",
-        as: "transaction",
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       });
       Order.belongsTo(models.Product, {
         foreignKey: "productId",
-        as: "product",
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       });
       Order.belongsTo(models.User, {
         foreignKey: "userId",
-        as: "user",
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       })

@@ -11,11 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Transaction.hasMany(models.Order, {
-        as: "orders"
+        foreignKey: "transactionId"
       });
       Transaction.belongsTo(models.User, {
         foreignKey: "userId",
-        as: "user",
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       })

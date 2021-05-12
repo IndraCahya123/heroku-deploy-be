@@ -14,10 +14,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId"
       });
       User.hasMany(models.Transaction, {
-        as: "transactions"
+        foreignKey: "userId"
       });
       User.hasMany(models.Order, {
-        as: "orders"
+        foreignKey: "userId"
       })
     }
   };

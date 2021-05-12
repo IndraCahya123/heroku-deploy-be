@@ -15,7 +15,9 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       });
-      Product.hasOne(models.Order);
+      Product.hasOne(models.Order, {
+        foreignKey: "productId"
+      });
     }
   };
   Product.init({
