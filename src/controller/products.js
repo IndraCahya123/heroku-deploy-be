@@ -17,7 +17,7 @@ exports.getAllProducts = async (req, res) => {
                 },
             },
             attributes: {
-                exclude: ["userId", "UserId", "createdAt", "updatedAt"],
+                exclude: ["UserId", "createdAt", "updatedAt"],
             }
         });
 
@@ -63,7 +63,7 @@ exports.getAllProductsByPartnerId = async (req, res) => {
                 },
             },
             attributes: {
-                exclude: ["userId", "UserId", "createdAt", "updatedAt"],
+                exclude: ["UserId", "createdAt", "updatedAt"],
             }
         });
 
