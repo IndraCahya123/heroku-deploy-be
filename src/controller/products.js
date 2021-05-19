@@ -12,7 +12,6 @@ exports.getAllProducts = async (req, res) => {
         const products = await Product.findAll({
             include: {
                 model: User,
-                as: "user",
                 attributes: {
                     exclude: ["password", "location", "email", "phone", "role", "createdAt", "updatedAt"],
                 },
@@ -59,7 +58,6 @@ exports.getAllProductsByPartnerId = async (req, res) => {
             },
             include: {
                 model: User,
-                as: "user",
                 attributes: {
                     exclude: ["password", "role", "createdAt", "updatedAt"],
                 },
@@ -106,7 +104,6 @@ exports.getDetailProduct = async (req, res) => {
             },
             include: {
                 model: User,
-                as: "user",
                 attributes: {
                     exclude: ["password", "image", "role", "createdAt", "updatedAt"],
                 },
